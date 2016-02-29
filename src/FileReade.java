@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileReade implements Reader {
+public class FileReade implements IReader {
 	java.io.Reader reader;
 
 	public FileReade(String filename) throws FileNotFoundException {
@@ -15,12 +15,35 @@ public class FileReade implements Reader {
 	@Override
 	public List<String> ReadAll() {
 		List<String> lines = new ArrayList<String>();
+		String line;
+		 try (BufferedReader br = new BufferedReader(reader)) {
+			while ((line = br.readLine()) != null) {
+				lines.add(line);
+			 }
+		 } catch (Exception e) {
+			// TODO: handle exception
+		}
 		return lines;
+	}
+	
+	@Override
+	public String ReadLine() {
+		 try (BufferedReader br = new BufferedReader(reader)) {
+			 return br.readLine();
+		 } catch (Exception e) {
+			// TODO: handle exception
+		}
+		return "";
 	}
 
 	@Override
 	public List<String> ReadByBetween(int start, int count) {
 		 List<String> lines = new ArrayList<String>();
+		 if (start < 0 || count <= 0) {
+			 System.out.println("Error: ReadByBetween bad parameters");
+			 return lines;
+		 }
+		 
 		 String line = null;
 		 int position = 0;
 		 int read = 0;
@@ -30,7 +53,7 @@ public class FileReade implements Reader {
 					continue;
 				
 				lines.add(line);
-				 
+
 				if (++read >= count)
 					break;
 			 }
