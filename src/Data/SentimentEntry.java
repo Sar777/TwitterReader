@@ -1,28 +1,25 @@
 package Data;
 
 public class SentimentEntry {
-	private String _word;
-	private double _sentiment;
+	private String word;
+	private double sentiment;
 	
-	public SentimentEntry(String str) {
-		String[] split = str.split(",");
-		setWord(split[0]);
-		setSentiment(Double.parseDouble(split[1]));
+	public SentimentEntry() {
 	}
 
 	public String getWord() {
-		return _word;
+		return word;
 	}
 
-	public void setWord(String _word) {
-		this._word = _word;
+	public void setWord(String word) {
+		this.word = word;
 	}
 
 	public double getSentiment() {
-		return _sentiment;
+		return sentiment;
 	}
 
-	public void setSentiment(double _sentiment) {
-		this._sentiment = _sentiment;
+	public void setSentiment(double sentiment) {
+		this.sentiment = sentiment;
 	}
 }
