@@ -5,7 +5,7 @@ import Data.SentimentEntry;
 public class SentimentsParsers implements IParser<String, SentimentEntry> {
 
 	@Override
-	public SentimentEntry Parse(String data) {
+	public SentimentEntry parse(String data) {
 		SentimentEntry entry = new SentimentEntry();
 		String[] split = data.split(",");
 		entry.setWord(split[0]);

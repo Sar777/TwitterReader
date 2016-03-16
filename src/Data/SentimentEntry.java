@@ -22,4 +22,9 @@ public class SentimentEntry {
 	public void setSentiment(double sentiment) {
 		this.sentiment = sentiment;
 	}
+	
+	@Override
+	public String toString() {
+		return word + ", " + sentiment;
+	}
 }

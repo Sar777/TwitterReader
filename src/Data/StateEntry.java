@@ -26,8 +26,19 @@ public class StateEntry {
 	public void setName(String _name) {
 		this.name = _name;
 	}
-	
+
+	@Override
 	public String toString() {
-		return name;
+		String data = "";
+		data += name + "\n";
+		int group = -1;
+		for (Triplet<Integer, Double, Double> triplet : cordsList) {
+			if (group != triplet.getValue0()) {
+				data += "Group: " + triplet.getValue0() + "\n";
+				group = triplet.getValue0();
+			}
+			data += "\t{ " + triplet.getValue1() + ", " + triplet.getValue2() + "}\n";
+		}
+		return data;
 	}
 }

@@ -6,7 +6,7 @@ import Data.StateEntry;
 
 public class StatesParser implements IParser<JSONArray, StateEntry> {
 	@Override
-	public StateEntry Parse(JSONArray data) {
+	public StateEntry parse(JSONArray data) {
 		StateEntry state = new StateEntry();
 		for (int i = 0; i < data.length(); ++i) {
 			JSONArray groupJson = new JSONArray(data.get(i).toString());

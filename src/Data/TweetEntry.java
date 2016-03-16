@@ -46,7 +46,12 @@ public class TweetEntry {
 		return text;
 	}
 
-	public void setText(String _text) {
-		this.text = _text;
+	public void setText(String text) {
+		this.text = text;
+	}
+	
+	@Override
+	public String toString() {
+		return "[" + latitude + ", " + longitude + "] " + date.toString() + " " + text;
 	}
 }

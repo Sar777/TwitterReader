@@ -10,7 +10,7 @@ import Data.TweetEntry;
 public class TweetsParser implements IParser<String, TweetEntry> {
 
 	@Override
-	public TweetEntry Parse(String data) {
+	public TweetEntry parse(String data) {
 		Matcher m = Pattern.compile("^\\[([0-9-.]+), ([0-9-.]+)\\]\\t[0-9]\\t([0-9]+-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+)\\t(.*)").matcher(data);
 		if (!m.matches())
 			return null;

@@ -1,5 +1,5 @@
 package Parsers;
 
 public interface IParser<A,B> {
-	public B Parse(A data);
+	public B parse(A data);
 }
