@@ -1,0 +1,3 @@
+package Reports;
+
+public enum TypeReports { REPORT_TWEETS_BY_HASH_TAG, REPORT_TWEETS_SENTIMENTS, REPORT_STATE_MAX_TWEETS }

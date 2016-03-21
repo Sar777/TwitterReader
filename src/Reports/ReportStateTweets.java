@@ -2,7 +2,6 @@ package Reports;
 
 import java.util.HashSet;
 
-import Data.SentimentEntry;
 import Data.StateEntry;
 import Data.TweetEntry;
 import Reports.Generators.IReportsGenerator;
@@ -10,12 +9,12 @@ import Reports.Settings.SettingStateTweets;
 
 public class ReportStateTweets implements IReportsGenerator<SettingStateTweets, ReportStateTweets> {
 	private HashSet<TweetEntry> tweets;
-	private HashSet<SentimentEntry> sentiments;
+	private HashSet<StateEntry> states;
 	private StateEntry state;
 	
-	public ReportStateTweets(HashSet<TweetEntry> tweets, HashSet<SentimentEntry> sentiments) {
-		this.setTweets(tweets);
-		this.setSentiments(sentiments);
+	public ReportStateTweets(HashSet<TweetEntry> tweets, HashSet<StateEntry> states) {
+		this.tweets = tweets;
+		this.states = states;
 		this.state = null;
 	}
 	
@@ -29,16 +28,8 @@ public class ReportStateTweets implements IReportsGenerator<SettingStateTweets, 
 		return tweets;
 	}
 
-	public void setTweets(HashSet<TweetEntry> tweets) {
-		this.tweets = tweets;
-	}
-
-	public HashSet<SentimentEntry> getSentiments() {
-		return sentiments;
-	}
-
-	public void setSentiments(HashSet<SentimentEntry> sentiments) {
-		this.sentiments = sentiments;
+	public HashSet<StateEntry> getStates() {
+		return states;
 	}
 
 	public StateEntry getResult() {

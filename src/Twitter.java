@@ -1,6 +1,4 @@
 import java.io.FileNotFoundException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -14,9 +12,13 @@ import Parsers.IParser;
 import Parsers.SentimentsParsers;
 import Parsers.StatesParser;
 import Parsers.TweetsParser;
+import Reports.ReportHashTag;
+import Reports.ReportStateTweets;
 import Reports.ReportTweetSentiments;
+import Reports.TypeReports;
 import Reports.Generators.IReportsGenerator;
 import Reports.Settings.SettingHashTag;
+import Reports.Settings.SettingStateTweets;
 import Reports.Settings.SettingTweetSentiments;
 
 public class Twitter {
@@ -30,17 +32,17 @@ public class Twitter {
 			return;
 		}
 
-		LoadAllTweets();
-		LoadAllStates();
-		LoadAllSentiments();
+		LoadAllTweets("all_tweets.txt");
+		LoadAllStates("states.json");
+		LoadAllSentiments("sentiments.csv");
 	}
 
 	// Все твиты
-	public static void LoadAllTweets() {
+	public static void LoadAllTweets(String fileName) {
 		IReader reader = null;
 		allTweets.clear();
 		try {
-			reader = new FileReade("all_tweets.txt");
+			reader = new FileReade(fileName);
 			List<String> lines = reader.ReadByBetween(0, 100);
 			for (String str : lines)
 				allTweets.add(new TweetsParser().parse(str));
@@ -52,11 +54,11 @@ public class Twitter {
 	}
 
 	// Все штаты
-	public static void LoadAllStates() {
+	public static void LoadAllStates(String fileName) {
 		IReader reader = null;
 		allStates.clear();
 		try {
-			reader = new FileReade("states.json");
+			reader = new FileReade(fileName);
 			JSONObject json = new JSONObject(reader.ReadLine());
 			Iterator<String> keys = json.keys();
 			while (keys.hasNext()) {
@@ -75,11 +77,11 @@ public class Twitter {
 	}
 	
 	// Все эмоциональные состояния
-	public static void LoadAllSentiments() {
+	public static void LoadAllSentiments(String fileName) {
 		IReader reader = null;
 		allSentiments.clear();
 		try {
-			reader = new FileReade("sentiments.csv");
+			reader = new FileReade(fileName);
 			List<String> lines = reader.ReadByBetween(0, 1000);
 			for (String str : lines)
 				allSentiments.add(new SentimentsParsers().parse(str));
@@ -88,5 +90,26 @@ public class Twitter {
 		} finally {
 			((FileReade) reader).Close();
 		}
+	}
+	
+	public static void GenerateReport(TypeReports type) {
+		@SuppressWarnings("unused")
+		IReportsGenerator<?,?> report = null;
+		switch (type) {
+			case REPORT_TWEETS_BY_HASH_TAG:
+				report = new ReportHashTag(allTweets).generate(new SettingHashTag("#hashtag"));
+				break;
+			case REPORT_TWEETS_SENTIMENTS:
+				//report = new ReportTweetSentiments(allTweets, allSentiments).generate(new SettingTweetSentiments());
+				break;
+			case REPORT_STATE_MAX_TWEETS:
+				//report = new ReportStateTweets(allTweets, allStates).generate(new SettingStateTweets());
+				break;
+			default:
+				System.out.println("Not supported it report");
+				return;
+		}
+		
+		//report.get
 	}
 }
