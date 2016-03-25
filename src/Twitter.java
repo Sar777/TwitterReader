@@ -1,4 +1,6 @@
 import java.io.FileNotFoundException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +37,8 @@ public class Twitter {
 		LoadAllTweets("all_tweets.txt");
 		LoadAllStates("states.json");
 		LoadAllSentiments("sentiments.csv");
+		
+		GenerateReport(TypeReports.REPORT_STATE_MAX_TWEETS);
 	}
 
 	// Все твиты
@@ -43,9 +47,12 @@ public class Twitter {
 		allTweets.clear();
 		try {
 			reader = new FileReade(fileName);
-			List<String> lines = reader.ReadByBetween(0, 100);
-			for (String str : lines)
-				allTweets.add(new TweetsParser().parse(str));
+			List<String> lines = reader.ReadByBetween(0, 200000);
+			for (String str : lines) {
+				TweetEntry tweet = new TweetsParser().parse(str);
+				if (tweet != null)
+					allTweets.add(tweet);
+			}
 			System.out.println("Tweets load successfully. Loaded rows " + allTweets.size() + ".");
 		} catch (FileNotFoundException e) {
 		} finally {
@@ -103,7 +110,13 @@ public class Twitter {
 				//report = new ReportTweetSentiments(allTweets, allSentiments).generate(new SettingTweetSentiments());
 				break;
 			case REPORT_STATE_MAX_TWEETS:
-				//report = new ReportStateTweets(allTweets, allStates).generate(new SettingStateTweets());
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				try {
+					report = new ReportStateTweets(allTweets, allStates).generate(new SettingStateTweets(formatter.parse("2011-08-20 17:48:47"), formatter.parse("2011-08-29 17:48:47")));
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 			default:
 				System.out.println("Not supported it report");

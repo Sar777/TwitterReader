@@ -13,18 +13,14 @@ public class StatesParser implements IParser<JSONArray, StateEntry> {
 			for (int j = 0; j < groupJson.length(); ++j) {
 				JSONArray jsonCoord = new JSONArray(groupJson.get(j).toString());
 				if (data.length() == 1) {
-					double x = jsonCoord.getDouble(0);
-					double y = jsonCoord.getDouble(1);
-					state.addCoordinate(i, x, y);
+					state.addCoordinate(i, jsonCoord.getDouble(0), jsonCoord.getDouble(1));
 					continue;
 				}
 
 				for (int k = 0; k < jsonCoord.length(); ++k) {
 					JSONArray jsonArray = new JSONArray(jsonCoord.get(k).toString());
 					if (jsonArray.length() == 2) {
-						double x = jsonArray.getDouble(0);
-						double y = jsonArray.getDouble(1);
-						state.addCoordinate(i, x, y);
+						state.addCoordinate(i, jsonArray.getDouble(0), jsonArray.getDouble(1));
 					}
 				}
 			}
