@@ -42,5 +42,4 @@ public class ReportHashTag implements IReportsGenerator<SettingHashTag, ReportHa
 	public void setResult(List<TweetEntry> result) {
 		this.result = result;
 	}
-
 }

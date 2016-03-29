@@ -1,4 +1,7 @@
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
@@ -34,20 +37,20 @@ public class Twitter {
 			return;
 		}
 
-		LoadAllTweets("all_tweets.txt");
-		LoadAllStates("states.json");
-		LoadAllSentiments("sentiments.csv");
+		loadAllTweets("all_tweets.txt");
+		loadAllStates("states.json");
+		loadAllSentiments("sentiments.csv");
 		
-		GenerateReport(TypeReports.REPORT_STATE_MAX_TWEETS);
+		generateReport(TypeReports.REPORT_STATE_MAX_TWEETS);
 	}
 
 	// Все твиты
-	public static void LoadAllTweets(String fileName) {
+	public static void loadAllTweets(String fileName) {
 		IReader reader = null;
 		allTweets.clear();
 		try {
 			reader = new FileReade(fileName);
-			List<String> lines = reader.ReadByBetween(0, 200000);
+			List<String> lines = reader.ReadByBetween(1000, 1200);
 			for (String str : lines) {
 				TweetEntry tweet = new TweetsParser().parse(str);
 				if (tweet != null)
@@ -61,7 +64,7 @@ public class Twitter {
 	}
 
 	// Все штаты
-	public static void LoadAllStates(String fileName) {
+	public static void loadAllStates(String fileName) {
 		IReader reader = null;
 		allStates.clear();
 		try {
@@ -84,7 +87,7 @@ public class Twitter {
 	}
 	
 	// Все эмоциональные состояния
-	public static void LoadAllSentiments(String fileName) {
+	public static void loadAllSentiments(String fileName) {
 		IReader reader = null;
 		allSentiments.clear();
 		try {
@@ -99,30 +102,65 @@ public class Twitter {
 		}
 	}
 	
-	public static void GenerateReport(TypeReports type) {
+	public static void generateReport(TypeReports type) {
 		@SuppressWarnings("unused")
 		IReportsGenerator<?,?> report = null;
+		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 		switch (type) {
 			case REPORT_TWEETS_BY_HASH_TAG:
-				report = new ReportHashTag(allTweets).generate(new SettingHashTag("#hashtag"));
-				break;
-			case REPORT_TWEETS_SENTIMENTS:
-				//report = new ReportTweetSentiments(allTweets, allSentiments).generate(new SettingTweetSentiments());
-				break;
-			case REPORT_STATE_MAX_TWEETS:
-				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			{
+				System.out.println("You selected report by hash tag");
 				try {
-					report = new ReportStateTweets(allTweets, allStates).generate(new SettingStateTweets(formatter.parse("2011-08-20 17:48:47"), formatter.parse("2011-08-29 17:48:47")));
-				} catch (ParseException e) {
+					System.out.println("Input hash tag: ");
+					String hashtag = bufferRead.readLine();
+					report = new ReportHashTag(allTweets).generate(new SettingHashTag(hashtag));
+				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				break;
+			}
+			case REPORT_TWEETS_SENTIMENTS:
+			{
+				System.out.println("You selected report tweets sentiments");
+				try {
+					System.out.println("Input start date(example: 2011-08-20 17:48:47): ");
+					String firstDate = bufferRead.readLine();
+					System.out.println("Input end date(example: 2012-09-21 18:41:27): ");
+					String endDate = bufferRead.readLine();
+					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					report = new ReportTweetSentiments(allTweets, allSentiments).generate(new SettingTweetSentiments(formatter.parse(firstDate), formatter.parse(endDate)));
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			}
+			case REPORT_STATE_MAX_TWEETS:
+			{
+				System.out.println("You selected report state max tweets");
+				SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				try {
+					System.out.println("Input start date(example: 2011-08-20 17:48:47): ");
+					String firstDate = bufferRead.readLine();
+					System.out.println("Input end date(example: 2012-09-21 18:41:27): ");
+					String endDate = bufferRead.readLine();
+					report = new ReportStateTweets(allTweets, allStates).generate(new SettingStateTweets(formatter.parse(firstDate), formatter.parse(endDate)));
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				break;
+			}
 			default:
 				System.out.println("Not supported it report");
 				return;
 		}
-		
-		//report.get
 	}
 }

@@ -18,8 +18,8 @@ public class TweetsParser implements IParser<String, TweetEntry> {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		TweetEntry tweet = new TweetEntry();
-		tweet.setLatitude(Double.parseDouble(m.group(1)));
-		tweet.setLongitude(Double.parseDouble(m.group(2)));
+		tweet.setLatitude(Double.parseDouble(m.group(2)));
+		tweet.setLongitude(Double.parseDouble(m.group(1)));
 		try {
 			tweet.setDate(formatter.parse(m.group(3)));
 		} catch (ParseException e) {

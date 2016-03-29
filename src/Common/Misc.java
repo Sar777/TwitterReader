@@ -4,7 +4,6 @@ import java.util.List;
 import org.javatuples.*;
 
 public class Misc {
-	
 	static public Boolean isInPolygon(List<Pair<Double, Double>> coord, double x, double y)
 	{		
 	   Boolean c = false;
