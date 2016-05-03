@@ -17,6 +17,9 @@ import Data.TweetEntry;
 import Reports.Generators.IReportsGenerator;
 import Reports.Settings.SettingStateTweets;
 
+/**
+ * The Class ReportStateTweets. Generate report about state tweets.
+ */
 public class ReportStateTweets implements IReportsGenerator<SettingStateTweets, ReportStateTweets> {
 	private HashSet<TweetEntry> tweets;
 	private HashSet<StateEntry> states;
@@ -28,6 +31,7 @@ public class ReportStateTweets implements IReportsGenerator<SettingStateTweets, 
 		this.state = null;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public ReportStateTweets generate(SettingStateTweets setting) {
 		Map<String, Integer> map = new HashMap<String, Integer>();
@@ -56,24 +60,43 @@ public class ReportStateTweets implements IReportsGenerator<SettingStateTweets, 
 		   public int compare(Object obj1, Object obj2){
 		   return ((Comparable)((Map.Entry)(obj1)).getValue()).compareTo(((Map.Entry)(obj2)).getValue()); }});
 		
-		@SuppressWarnings("unchecked")
 		Map.Entry<String, Integer> val = (Entry<String, Integer>)list.get(list.size() - 1);
 		this.state = new Pair<String, Integer>(val.getKey(), val.getValue());
 		return this;
 	}
 
+	/**
+	 * Gets the tweets.
+	 *
+	 * @return the tweets
+	 */
 	public HashSet<TweetEntry> getTweets() {
 		return tweets;
 	}
 
+	/**
+	 * Gets the states.
+	 *
+	 * @return the states
+	 */
 	public HashSet<StateEntry> getStates() {
 		return states;
 	}
 
+	/**
+	 * Gets the result.
+	 *
+	 * @return the result
+	 */
 	public Pair<String, Integer> getResult() {
 		return state;
 	}
 
+	/**
+	 * Sets the result.
+	 *
+	 * @param state the state
+	 */
 	public void setResult(Pair<String, Integer> state) {
 		this.state = state;
 	}

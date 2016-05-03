@@ -7,6 +7,9 @@ import java.util.regex.Pattern;
 
 import Data.TweetEntry;
 
+/**
+ * The Class TweetsParser. Parse tweet.
+ */
 public class TweetsParser implements IParser<String, TweetEntry> {
 
 	@Override

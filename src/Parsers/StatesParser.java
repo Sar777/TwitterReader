@@ -4,6 +4,9 @@ import org.json.JSONArray;
 
 import Data.StateEntry;
 
+/**
+ * The Class StatesParser. Parse state.
+ */
 public class StatesParser implements IParser<JSONArray, StateEntry> {
 	@Override
 	public StateEntry parse(JSONArray data) {

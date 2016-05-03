@@ -2,6 +2,9 @@ package Parsers;
 
 import Data.SentimentEntry;
 
+/**
+ * The Class SentimentsParsers. Parse tweet sentiments.
+ */
 public class SentimentsParsers implements IParser<String, SentimentEntry> {
 
 	@Override

@@ -44,9 +44,7 @@ public class Twitter {
 		loadAllSentiments("sentiments.csv");
 		
 		//generateReport(TypeReports.REPORT_TWEETS_BY_HASH_TAG);
-		
-		StateEntry entry = allStates.iterator().next();
-		Frame f = new Frame(entry.getCoordinates().get(0));
+		new Frame(allStates);
 	}
 
 	// Все твиты
@@ -119,7 +117,7 @@ public class Twitter {
 					String hashtag = bufferRead.readLine();
 					report = new ReportHashTag(allTweets).generate(new SettingHashTag(hashtag));
 					System.out.println("Result:");
-					for (TweetEntry tweet : ((ReportHashTag)report).getResult()) {
+					for (TweetEntry tweet : ((ReportHashTag)report).getResults()) {
 						System.out.println(tweet.toString());
 					}
 				} catch (IOException e) {
