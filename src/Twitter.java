@@ -1,24 +1,23 @@
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.javatuples.Pair;
 import org.json.*;
 
+import Common.DataTypes;
 import Data.SentimentEntry;
 import Data.StateEntry;
 import Data.TweetEntry;
 import Frame.Frame;
-import Parsers.IParser;
-import Parsers.SentimentsParsers;
-import Parsers.StatesParser;
-import Parsers.TweetsParser;
+import Parsers.*;
 import Reports.ReportHashTag;
 import Reports.ReportStateTweets;
 import Reports.ReportTweetSentiments;
@@ -29,80 +28,40 @@ import Reports.Settings.SettingStateTweets;
 import Reports.Settings.SettingTweetSentiments;
 
 public class Twitter {
-	static private HashSet<TweetEntry> allTweets = new HashSet<TweetEntry>();
-	static private HashSet<StateEntry> allStates = new HashSet<StateEntry>();
-	static private HashSet<SentimentEntry> allSentiments = new HashSet<SentimentEntry>();
+	static private HashSet<TweetEntry> allTweets;
+	static private HashSet<StateEntry> allStates;
+	static private HashSet<SentimentEntry> allSentiments;
 
-	public static void main(String[] args) {
+	@SuppressWarnings("unchecked")
+	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		if (args.length < 3) {
 			System.out.println("Error: Bad format parameters");
 			return;
 		}
-
-		loadAllTweets("all_tweets.txt");
-		loadAllStates("states.json");
-		loadAllSentiments("sentiments.csv");
 		
-		//generateReport(TypeReports.REPORT_TWEETS_BY_HASH_TAG);
+		Future<HashSet<?>> f1 = LoaderMgr.getInstance().LoadData(DataTypes.DATA_ALL_TWEETS, "all_tweets.txt");
+		Future<HashSet<?>> f2 = LoaderMgr.getInstance().LoadData(DataTypes.DATA_ALL_STATES, "states.json");
+		Future<HashSet<?>> f3 = LoaderMgr.getInstance().LoadData(DataTypes.DATA_ALL_SENTINMENTS, "sentiments.csv");
+		
+		try {
+			allTweets = new HashSet<TweetEntry>((HashSet<TweetEntry>)f1.get());
+			allStates = new HashSet<StateEntry>((HashSet<StateEntry>)f2.get());
+			allSentiments = new HashSet<SentimentEntry>((HashSet<SentimentEntry>)f3.get());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Thread t1 = new Thread(() -> generateReport(TypeReports.REPORT_TWEETS_BY_HASH_TAG));
+		t1.start();
+		Thread t2 = new Thread(() -> generateReport(TypeReports.REPORT_STATE_MAX_TWEETS));
+		t2.start();
+		Thread t3 = new Thread(() -> generateReport(TypeReports.REPORT_TWEETS_SENTIMENTS));
+		t3.start();
 		new Frame(allStates);
-	}
-
-	// Все твиты
-	public static void loadAllTweets(String fileName) {
-		IReader reader = null;
-		allTweets.clear();
-		try {
-			reader = new FileReade(fileName);
-			List<String> lines = reader.ReadByBetween(0, 1200);
-			for (String str : lines) {
-				TweetEntry tweet = new TweetsParser().parse(str);
-				if (tweet != null)
-					allTweets.add(tweet);
-			}
-			System.out.println("Tweets load successfully. Loaded rows " + allTweets.size() + ".");
-		} catch (FileNotFoundException e) {
-		} finally {
-			((FileReade) reader).Close();
-		}
-	}
-
-	// Все штаты
-	public static void loadAllStates(String fileName) {
-		IReader reader = null;
-		allStates.clear();
-		try {
-			reader = new FileReade(fileName);
-			JSONObject json = new JSONObject(reader.ReadLine());
-			Iterator<String> keys = json.keys();
-			while (keys.hasNext()) {
-				String key = keys.next();
-				IParser<JSONArray, StateEntry> states = new StatesParser();
-				StateEntry state = states.parse(json.getJSONArray(key));
-				state.setName(key);
-				allStates.add(state);
-			}
-
-			System.out.println("States load successfully. Loaded rows " + allStates.size() + ".");
-		} catch (FileNotFoundException e) {
-		} finally {
-			((FileReade) reader).Close();
-		}
-	}
-	
-	// Все эмоциональные состояния
-	public static void loadAllSentiments(String fileName) {
-		IReader reader = null;
-		allSentiments.clear();
-		try {
-			reader = new FileReade(fileName);
-			List<String> lines = reader.ReadByBetween(0, 1000);
-			for (String str : lines)
-				allSentiments.add(new SentimentsParsers().parse(str));
-			System.out.println("Settiments load successfully. Loaded rows " + allSentiments.size() + ".");
-		} catch (FileNotFoundException e) {
-		} finally {
-			((FileReade) reader).Close();
-		}
 	}
 	
 	public static void generateReport(TypeReports type) {
@@ -116,6 +75,10 @@ public class Twitter {
 					System.out.println("Input hash tag: ");
 					String hashtag = bufferRead.readLine();
 					report = new ReportHashTag(allTweets).generate(new SettingHashTag(hashtag));
+					if (((ReportHashTag)report).getResults().isEmpty()) {
+						System.out.println("Not found");
+						break;
+					}
 					System.out.println("Result:");
 					for (TweetEntry tweet : ((ReportHashTag)report).getResults()) {
 						System.out.println(tweet.toString());
@@ -156,7 +119,11 @@ public class Twitter {
 					System.out.println("Input end date(format: XXXX-XX-XX XX:XX:XX): ");
 					String endDate = bufferRead.readLine();
 					report = new ReportStateTweets(allTweets, allStates).generate(new SettingStateTweets(formatter.parse(firstDate), formatter.parse(endDate)));
-					Pair<String, Integer> result = ((ReportStateTweets)report).getResult();
+					Pair<String, Integer> result = ((ReportStateTweets)report).getResult();			
+					if (result.getValue0().isEmpty()) {
+						System.out.println("Not found");
+						break;
+					}
 					System.out.println("Result: " + result.getValue0() + " -> " + result.getValue1());
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
