@@ -1,5 +1,10 @@
 package Data;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.PreparedStatement;
 
 /**
  * The Class TweetEntry. Information about tweet.
@@ -107,5 +112,21 @@ public class TweetEntry {
 	@Override
 	public String toString() {
 		return "[" + latitude + ", " + longitude + "] " + date.toString() + " " + text;
+	}
+	
+	/**
+	 * Save to tweet in db.
+	 *
+	 * @param conn the database connection
+	 * @throws SQLException the SQL exception
+	 */
+	public void SaveToDB(Connection conn) throws SQLException {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		PreparedStatement statement = (PreparedStatement) conn.prepareStatement("INSERT INTO `tweets` (`latitude`, `longitude`, `date`, `tweet`) VALUES (?, ?, ?, ?)");
+		statement.setDouble(1, latitude);
+		statement.setDouble(2, longitude);
+		statement.setString(3, dateFormat.format(date));
+		statement.setString(4, text);
+		statement.executeUpdate();
 	}
 }

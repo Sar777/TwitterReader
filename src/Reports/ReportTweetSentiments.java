@@ -2,6 +2,8 @@ package Reports;
 
 import java.util.HashSet;
 
+import com.mysql.jdbc.Connection;
+
 import Data.SentimentEntry;
 import Data.TweetEntry;
 import Reports.Generators.IReportsGenerator;
@@ -41,6 +43,13 @@ public class ReportTweetSentiments implements IReportsGenerator<SettingTweetSent
 		}
 		
 		return this;
+	}
+	
+
+	@Override
+	public ReportTweetSentiments generate(SettingTweetSentiments setting, Connection conn) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/**
@@ -101,5 +110,4 @@ public class ReportTweetSentiments implements IReportsGenerator<SettingTweetSent
 		
 		return 0.0f;
 	}
-
 }

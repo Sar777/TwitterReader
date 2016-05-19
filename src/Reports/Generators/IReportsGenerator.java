@@ -1,5 +1,7 @@
 package Reports.Generators;
 
+import com.mysql.jdbc.Connection;
+
 /**
  * The Interface IReportsGenerator.
  *
@@ -15,4 +17,5 @@ public interface IReportsGenerator<A, B> {
 	 * @return the report type
 	 */
 	public B generate(A setting);
+	public B generate(A setting, Connection conn);
 }

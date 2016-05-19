@@ -1,5 +1,7 @@
 package Parsers;
 
+import java.sql.ResultSet;
+
 import org.json.JSONArray;
 
 import Data.StateEntry;
@@ -30,6 +32,12 @@ public class StatesParser implements IParser<JSONArray, StateEntry> {
 		}
 		
 		return state;
+	}
+
+	@Override
+	public StateEntry parse(ResultSet rs) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

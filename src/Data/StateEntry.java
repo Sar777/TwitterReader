@@ -1,5 +1,6 @@
 package Data;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.javatuples.*;
+
+import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.PreparedStatement;
 
 /**
  * The Class StateEntry. Information about state
@@ -78,5 +82,24 @@ public class StateEntry {
 			}
 		}
 		return data;
+	}
+	
+	/**
+	 * Save to state in db.
+	 *
+	 * @param conn the database connection
+	 * @throws SQLException the SQL exception
+	 */
+	public void SaveToDB(Connection conn) throws SQLException {
+		PreparedStatement statement = (PreparedStatement) conn.prepareStatement("INSERT INTO `states` (`state`, `index`, `latitude`, `longitude`) VALUES (?, ?, ?, ?)");
+		for (Entry<Integer, List<Pair<Double, Double>>> map : cordsList.entrySet()) {
+			for (Pair<Double, Double> cord : map.getValue()) {
+				statement.setString(1, name);
+				statement.setInt(2, map.getKey());
+				statement.setDouble(3, cord.getValue0());
+				statement.setDouble(4, cord.getValue1());
+				statement.executeUpdate();
+			}
+		}
 	}
 }

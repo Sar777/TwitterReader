@@ -11,6 +11,8 @@ import java.util.Map.Entry;
 
 import org.javatuples.Pair;
 
+import com.mysql.jdbc.Connection;
+
 import Common.Misc;
 import Data.StateEntry;
 import Data.TweetEntry;
@@ -63,6 +65,12 @@ public class ReportStateTweets implements IReportsGenerator<SettingStateTweets, 
 		Map.Entry<String, Integer> val = (Entry<String, Integer>)list.get(list.size() - 1);
 		this.state = new Pair<String, Integer>(val.getKey(), val.getValue());
 		return this;
+	}
+	
+	@Override
+	public ReportStateTweets generate(SettingStateTweets setting, Connection conn) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/**

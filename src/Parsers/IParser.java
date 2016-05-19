@@ -1,5 +1,7 @@
 package Parsers;
 
+import java.sql.ResultSet;
+
 /**
  * The Interface IParser.
  *
@@ -15,4 +17,5 @@ public interface IParser<A,B> {
 	 * @return the parse result
 	 */
 	public B parse(A data);
+	public B parse(ResultSet rs);
 }

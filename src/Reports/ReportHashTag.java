@@ -1,10 +1,16 @@
 package Reports;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import com.mysql.jdbc.Connection;
+
 import Data.TweetEntry;
+import Parsers.TweetsParser;
 import Reports.Generators.IReportsGenerator;
 import Reports.Settings.SettingHashTag;
 
@@ -32,6 +38,28 @@ public class ReportHashTag implements IReportsGenerator<SettingHashTag, ReportHa
 			if (tweet.getText().indexOf(setting.getTag()) != -1)
 				result.add(tweet);
 		}
+		return this;
+	}
+
+	@Override
+	public ReportHashTag generate(SettingHashTag setting, Connection conn) {
+		if (conn == null)
+			return null;
+		
+		try {
+			Statement statement = conn.createStatement();
+			ResultSet rs = statement.executeQuery("SELECT `latitude`, `longitude`, `date`, `tweet` FROM `tweets` WHERE `tweet` LIKE '%" + setting.getTag() + "%'");
+			while (rs.next()) {
+				TweetEntry tweet = new TweetsParser().parse(rs);
+				if (tweet != null)
+					result.add(tweet);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+			
 		return this;
 	}
 
